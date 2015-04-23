@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TypeViewerSet xmlns="wily.typeviews" xmlns:its="http://www.w3.org/2005/11/its"
+	namespace="ActiveMQ" version="2.0">
+	<!-- ActiveMQ Component Definition -->
+	<ComponentDefinition id="broker-graph">
+		<Panel columns="1" layout="GridLayout" rows="2">
+			<Panel columns="2" layout="GridLayout" rows="1">
+				<Graph relative-specifier=":.*ConnectionCount">
+					<Title its:translate="yes">Connections</Title>
+				</Graph>
+				<Graph relative-specifier=":Total(Producer|Consumer)Count">
+					<Title its:translate="yes">Producer/Consumer Count</Title>
+				</Graph>
+			</Panel>
+      <Panel columns="3" layout="GridLayout" rows="1">
+        <Graph relative-specifier=":*PercentUsage">
+          <Title its:translate="yes">Job Scheduler/Store/Temp/Memory Usage (%)</Title>
+        </Graph>
+				<Graph relative-specifier=":.*MessageSize">
+					<Title its:translate="yes">Message Size (Min, Avg, Max)</Title>
+				</Graph>
+				<Graph relative-specifier=":Total(Message|Enqueue|Dequeue)Count">
+					<Title its:translate="yes">Message Count</Title>
+				</Graph>
+			</Panel>
+		</Panel>
+	</ComponentDefinition>
+	<ComponentDefinition id="queue-table">
+		<MetricDataTable show-bottom-graph="true">
+			<Column content-type="LastPrefixSegment" relative-width="1"
+				segment-offset="0">
+				<Title its:translate="yes">Name</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):AverageEnqueueTime">
+				<Title its:translate="yes">Avg Enqueue Time</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):AverageMessageSize">
+				<Title its:translate="yes">Avg Message Size</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):ConsumerCount">
+				<Title its:translate="yes">Consumer Count</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):ProducerCount">
+				<Title its:translate="yes">Producer Count</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):DispatchCount" sort="Descending">
+				<Title its:translate="yes">Dispatch Count</Title>
+			</Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):MemoryPercentUsage">
+        <Title its:translate="yes">Memory Usage (%)</Title>
+      </Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):QueueSize">
+        <Title its:translate="yes">Queue Size</Title>
+      </Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):DLQ">
+        <Title its:translate="yes">DLQ</Title>
+      </Column>
+		</MetricDataTable>
+	</ComponentDefinition>
+  <ComponentDefinition id="queue-graph">
+    <Panel columns="1" layout="GridLayout" rows="3">
+      <Graph relative-specifier=":.*EnqueueTime">
+        <Title its:translate="yes">Enqueue Time (Min, Avg, Max)</Title>
+      </Graph>
+      <Graph relative-specifier=":(Producer|Consumer)Count">
+        <Title its:translate="yes">Producer/Consumer Count</Title>
+      </Graph>
+      <Graph relative-specifier=":.*MessageSize">
+        <Title its:translate="yes">Message Size (Min, Avg, Max)</Title>
+      </Graph>
+      <Graph relative-specifier=":(Dequeue|Dispatch|Enqueue)Count">
+        <Title its:translate="yes">Enqueue/Dequeue/Dispatch Count</Title>
+      </Graph>
+      <Graph relative-specifier=":(Expired|InFlight)Count">
+        <Title its:translate="yes">Expired/InFlight Count</Title>
+      </Graph>
+      <Graph relative-specifier=":.*BlockedTime">
+        <Title its:translate="yes">Blocked Time (Avg, Total)</Title>
+      </Graph>
+      <Graph relative-specifier=":.*PercentUsage">
+        <Title its:translate="yes">Memory/Cursor Usage (%)</Title>
+      </Graph>
+      <Graph relative-specifier=":QueueSize">
+        <Title its:translate="yes">Queue Size</Title>
+      </Graph>
+      <Graph relative-specifier=":DLQ">
+        <Title its:translate="yes">DLQ</Title>
+      </Graph>
+    </Panel>
+  </ComponentDefinition>
+	<!-- ActiveMQ Type Viewers -->
+	<TypeViewer id="ActiveMQ-Broker" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*"
+		tab-order="9">
+		<Title its:translate="yes">ActiveMQ Broker</Title>
+    <SplitPane split-ratio="0.6">
+      <Component id="broker-graph" />
+      <SplitPane split-ratio="0.6">
+        <Component id="queue-table" specifier-prepend="Queues\|[^\|]*" show-bottom-graph="false"/>
+        <Component id="queue-table" specifier-prepend="Topics\|[^\|]*" show-bottom-graph="false"/>
+      </SplitPane>
+    </SplitPane>
+	</TypeViewer>
+	<TypeViewer id="ActiveMQ-Queues" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*\|Queues\|[^\|]*"
+		tab-order="10">
+		<Title its:translate="yes">ActiveMQ Queues</Title>
+		<Component id="queue-graph" />
+	</TypeViewer>
+  <TypeViewer id="ActiveMQ-Topics" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*\|Topics\|[^\|]*"
+    tab-order="10">
+    <Title its:translate="yes">ActiveMQ Topics</Title>
+    <Component id="queue-graph" />
+  </TypeViewer>
+</TypeViewerSet>
