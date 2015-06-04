@@ -1,64 +1,73 @@
-# ActiveMQ Broker Monitoring (Vesion 1.0)
-*__NOTE TO CONTRIBUTORS:__ Items marked in italics provide how-to guidance in creating this file.  These comments should be removed once proper content has been added.  Other non-italicized text should remain in this file as boilerplate text.*
+# ActiveMQ Broker Monitoring (Version 1.0)
 
 
 # Description
-*Provide a short description of the field pack here. See [Markdown Basics](https://help.github.com/articles/markdown-basics/) for markdown syntax.*
-
-*__NOTE TO CONTRIBUTORS:__ Projects are designed to be self documenting in this README file.  Rich text (including screenshots) can be  found inside the projects themselves (as committed assets).  Generally a project overview (including description, sample screenshots, etc.) can be found on the project wiki page at `http://github.com/ca-apm/<repo_name>/wiki`.*
+This field pack is a python script that collects data from remote Active MQ broker JMX interface (via Jolokia http) and publishes to EPA using 9.7.1 Restful EPAgent
 
 ## Releases
 From time to time, projects may make compiled releases available.  While source code is always available for complete build, releases serve as a "tag" (numbered release) and often contain prepared packages that are prebuilt and ready to use.  Visit `http://github.com/ca-apm/<repo_name>/releases` for details.
 
 ## APM version
-*APM EM and agent versions the field pack has been tested with.*
+APM 9.7.1
 
 ## Supported third party versions
-*Third party versions tested with.*
+Apache ActiveMQ 5.10.1
 
 ## Limitations
-*What the field pack will not do.*
+This field pack currently only supports connections to one ActiveMQ broker.
 
 ## License
-*Link to the license under which this field pack is provided. See [Licensing](https://communities.ca.com/docs/DOC-231150910#license) on the CA APM Developer Community.*
-
-Please review the
-**LICENSE**
-file in this repository.  Licenses may vary by repository.  Your download and use of this software constitutes your agreement to this license.
+[Apache License, Version 2.0, January 2004](http://www.apache.org/licenses/). See [Licensing](https://communities.ca.com/docs/DOC-231150910#license) on the CA APM Developer Community.
 
 # Installation Instructions
-*How to install the field pack.*
 
 ## Prerequisites
-*What has to be done before installing the field pack.*
+* Install, configure and run an EPAgent on the same or a remote server. See [CA APM Environment Performance Agent Implementation Guide](https://wiki.ca.com/display/APMDEVOPS97/CA+APM+Environment+Performance+Agent+Implementation+Guide).
+* Python 2.7 or above with the 'requests' python package This can be obtained in one of the following ways: `yum install python-requests` or `pip install requests` or `easy_install requests`
+* JMX and Jolokia enabled and access not restricted on ActiveMQ broker
 
 ## Dependencies
-*APM and third party dependencies. E.g. APM agent 9.1+, SOA (web services) extension 9.1+*
+APM EPAgent version 9.7.1
 
 ## Installation
-*How to install the field pack.*
+Copy `activeMQ.py` to any diretory and make it runnable (`chmod u+x activeMQ.py`)
 
 ## Configuration
-*How to configure the field pack.*
-
+n/a
 
 # Usage Instructions
-*How to use the field pack.*
+
+```Usage: activeMQ.py [options]
+
+Options:
+  -h, --help show this help message and exit
+  -v, --verbose verbose output
+  -H HOSTNAME, --hostname=HOSTNAME
+    hostname EPAgent is running on
+  -p PORT, --port=PORT port EPAgent is connected to
+  -m METRICPATH, --metric_path=METRICPATH
+     metric path header for all metrics
+  -u USER:PASSWORD, --user=USER:PASSWORD
+     user and password for ActiveMQ JMX access
+  -b BROKERHOSTNAME, --broker=BROKERHOSTNAME
+     hostname of ActiveMQ broker
+  -j JMX_PORT, --jmx_port=JMX_PORT
+     JMX port of ActiveMQ broker```
 
 ## Metric description
-*Describe the metrics provided by this field pack or link to third party documentation.*
+The field pack queries the JMX API of AtiveMQ an provides information about the broker, queues and topics.
 
 ## Custom Management Modules
-*Dashboards, etc. included with this field pack.*
+n/a
 
 ## Custom type viewers
-*Type viewers included with this field pack. Include agent and metric path that the type viewer matches against.*
+A type viewer `activemqepa.typeviewers.xml` is included in the project. it matches against the metric path `ActiveMQ|<hostname>|Broker|<brokername>`
 
 ## Name Formatter Replacements
-*If the field pack includes name formatters cite all place holders here and what they are replaced with.*
+n/a
 
 ## Debugging and Troubleshooting
-*How to debug and troubleshoot the field pack.*
+You can run the python script with option -v for verbose output. You can also uncomment the `print` statements in the code.
 
 ## Support
 This document and associated tools are made available from CA Technologies as examples and provided at no charge as a courtesy to the CA APM Community at large. This resource may require modification for use in your environment. However, please note that this resource is not supported by CA Technologies, and inclusion in this site should not be construed to be an endorsement or recommendation by CA Technologies. These utilities are not covered by the CA Technologies software license agreement and there is no explicit or implied warranty from CA Technologies. They can be used and distributed freely amongst the CA APM Community, but not sold. As such, they are unsupported software, provided as is without warranty of any kind, express or implied, including but not limited to warranties of merchantability and fitness for a particular purpose. CA Technologies does not warrant that this resource will meet your requirements or that the operation of the resource will be uninterrupted or error free or that any defects will be corrected. The use of this resource implies that you understand and agree to the terms listed herein.
@@ -79,4 +88,4 @@ Changes for each version of the field pack.
 
 Version | Author | Comment
 --------|--------|--------
-1.0 | Your name | First version of the field pack.
+1.0 | Guenter Grossberger | First version of the field pack.
