@@ -1,5 +1,5 @@
 #!/Library/Frameworks/Python.framework/Versions/2.7/bin/python
-#note above line is for MacPorts python (with Requests module) 
+#note above line is for MacPorts python (with Requests module)
 #!/usr/bin/env python
 
 # This is a simple Collector Program who's intent is to demonstrate how
@@ -11,7 +11,7 @@
 #
 # TODO
 #       collectActiveMQ:
-#           Calls the JMX interface of an ActiveMQ broker via the Jolokia http 
+#           Calls the JMX interface of an ActiveMQ broker via the Jolokia http
 #           interface.and reports broker, queue and topic statistics.
 #
 # The metrics will be default be reported under 'linuxStats|<hostname>|...'.  As
@@ -66,17 +66,17 @@ from mercurial.revset import destination
 
 def callUrl(url, username):
     request = urllib2.Request(url)
-    # You need the replace to handle encodestring adding a trailing newline 
+    # You need the replace to handle encodestring adding a trailing newline
     # (https://docs.python.org/2/library/base64.html#base64.encodestring)
     base64string = base64.encodestring('%s' % (username)).replace('\n', '')
-    request.add_header("Authorization", "Basic %s" % base64string)   
+    request.add_header("Authorization", "Basic %s" % base64string)
     try:
         response = urllib2.urlopen(request)
     except urllib2.URLError as err:
-        print "Unable to connect to ActiveMQ broker via URL \"{}\": {}\ncheck URL, port and that jolokia is enabled!".format(url, err)
+        print("Unable to connect to ActiveMQ broker via URL \"{}\": {}\ncheck URL, port and that jolokia is enabled!".format(url, err))
         sys.exit(1)
     data = json.loads(response.read())
-    # print json.dumps(data, sort_keys=True, indent=4)
+    # print(json.dumps(data, sort_keys=True, indent=4))
     return data
 
 
@@ -87,7 +87,7 @@ def writeMetrics(values, metricPath, metricDict):
         #if (type(values[key]) is list
         #if (type(values[key]) is dict
 
-        #print 'type of {}:{} is {}'.format(key, values[key], type(values[key]))
+        #print('type of {}:{} is {}'.format(key, values[key], type(values[key])))
 
         if (type(values[key]) is unicode):
             m = {}
@@ -147,51 +147,53 @@ def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, use
 
     url = "http://{0}:{1}/api/jolokia/read/org.apache.activemq:type=Broker,brokerName={2}".format(brokerhost, jmxport, urllib2.quote(brokername))
     data = callUrl(url, username)
-    values = data['value']
+    if (data.has_key('value')):
+        values = data['value']
 
-    brokerMetricPath = metricPath + '|Broker|' + values['BrokerName']
-    #brokerMetricPath = metricPath + '|' + values['BrokerName']
-    writeMetrics(values, brokerMetricPath, metricDict)
+        brokerMetricPath = metricPath + '|Broker|' + values['BrokerName']
+        #brokerMetricPath = metricPath + '|' + values['BrokerName']
+        writeMetrics(values, brokerMetricPath, metricDict)
 
-    """
-    serviceUrl = url + ",Service=Health"
-    data = callUrl(serviceUrl, username)
-    """
+        """
+        serviceUrl = url + ",Service=Health"
+        data = callUrl(serviceUrl, username)
+        """
 
-    destinationTypes = ['Queues', 'Topics', 'TemporaryQueues', 'TemporaryTopics']
-    
-    for destinationType in destinationTypes:
-        for destination in values[destinationType]:
-            objName = destination['objectName']
-            index = objName.index('destinationName=')
-            start = index + len('destinationName=')
-            end = objName.index(',', index)
-            destName = objName[start:end]
-        
-            if (-1 == destName.find('ActiveMQ.Advisory.')):
-                # print "destinationType=" + destinationType
-                # print "destinationType-1=" + destinationType[:-1]
-                
-                destUrl = "{},destinationType={},destinationName={}".format(url, destinationType[:-1], urllib2.quote(destName))
-                # print destUrl
-                data = callUrl(destUrl, username)
+        destinationTypes = ['Queues', 'Topics', 'TemporaryQueues', 'TemporaryTopics']
 
-                destMetricPath = metricPath + '|Broker|' + values['BrokerName'] + '|' + destinationType + '|' + destName
-                writeMetrics(data['value'], destMetricPath, metricDict)
-    
+        for destinationType in destinationTypes:
+            for destination in values[destinationType]:
+                objName = destination['objectName']
+                index = objName.index('destinationName=')
+                start = index + len('destinationName=')
+                end = objName.index(',', index)
+                destName = objName[start:end]
+
+                if (-1 == destName.find('ActiveMQ.Advisory.')):
+                    # print("destinationType=" + destinationType)
+                    # print("destinationType-1=" + destinationType[:-1])
+
+                    destUrl = "{},destinationType={},destinationName={}".format(url, destinationType[:-1], urllib2.quote(destName))
+                    # print(destUrl)
+                    data = callUrl(destUrl, username)
+
+                    if (data.has_key('value')):
+                        destMetricPath = metricPath + '|Broker|' + values['BrokerName'] + '|' + destinationType + '|' + destName
+                        writeMetrics(data['value'], destMetricPath, metricDict)
+
     """
     values = data['value']
 
     brokerMetricPath = brokerMetricPath + '|Health'
     writeMetrics(values, brokerMetricPath, metricDict)
     """
-    
-    
+
+
 
 def main(argv):
 
     parser = optparse.OptionParser()
-    parser.add_option("-v", "--verbose", help = "verbose output", 
+    parser.add_option("-v", "--verbose", help = "verbose output",
         dest = "verbose", default = False, action = "store_true")
 
     parser.add_option("-H", "--hostname", default = "localhost",
@@ -199,8 +201,8 @@ def main(argv):
     parser.add_option("-p", "--port", help = "port EPAgent is connected to",
         type = "int", default = 8080, dest = "port")
     parser.add_option("-m", "--metric_path", help = "metric path header for all metrics",
-        dest = "metricPath", default = "ActiveMQ|{0}".format(socket.gethostname()))
-        #dest = "metricPath", default = "ActiveMQ")
+        #dest = "metricPath", default = "ActiveMQ|{0}".format(socket.gethostname()))
+        dest = "metricPath", default = "ActiveMQ")
     parser.add_option("-u", "--user", help = "user and password for ActiveMQ JMX access",
         dest = "user", default = "admin:admin")
     parser.add_option("-b", "--broker_host", help = "hostname of ActiveMQ broker",
@@ -213,7 +215,7 @@ def main(argv):
     (options, args) = parser.parse_args();
 
     if options.verbose == True:
-        print "Verbose enabled"
+        print("Verbose enabled")
 
     # Configure URL and header for RESTful submission
     url = "http://{0}:{1}/apm/metricFeed".format(options.hostname,
@@ -221,7 +223,7 @@ def main(argv):
     headers = {'content-type': 'application/json'}
 
     if options.verbose:
-        print "Submitting to: {0}".format(url)
+        print("Submitting to: {0}".format(url))
 
     submissionCount = 0
 
@@ -245,22 +247,22 @@ def main(argv):
             r = requests.post(url, data = json.dumps(metricDict),
                               headers = headers)
         except requests.ConnectionError as err:
-            print "Unable to connect to EPAgent via URL \"{}\": {}\ncheck httpServerPort and that EPAgent is running!".format(url, err)
+            print("Unable to connect to EPAgent via URL \"{}\": {}\ncheck httpServerPort and that EPAgent is running!".format(url, err))
             sys.exit(1)
-            
-        
+
+
         if options.verbose:
-            print "jsonDump:"
-            print json.dumps(metricDict, indent = 4)
+            print("jsonDump:")
+            print(json.dumps(metricDict, indent = 4))
 
-            print "Response:"
+            print("Response:")
             response = json.loads(r.text)
-            print json.dumps(response, indent = 4)
+            print(json.dumps(response, indent = 4))
 
-            print "StatusCode: {0}".format(r.status_code)
+            print("StatusCode: {0}".format(r.status_code))
 
         submissionCount += 1
-        # print "Submitted metric: {0}".format(submissionCount)
+        # print("Submitted metric: {0}".format(submissionCount))
 
         end = datetime.now()
         delta = end-start
