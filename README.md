@@ -36,7 +36,8 @@ Copy `activeMQ.py` to any diretory and make it runnable (`chmod u+x activeMQ.py`
 n/a
 
 # Usage Instructions
-```Usage: activeMQ.py [options]
+```
+Usage: activeMQ.py [options]
 
 Options:
   -h, --help show this help message and exit
@@ -51,7 +52,8 @@ Options:
   -b BROKERHOSTNAME, --broker=BROKERHOSTNAME
      hostname of ActiveMQ broker
   -j JMX_PORT, --jmx_port=JMX_PORT
-     JMX port of ActiveMQ broker```
+     JMX port of ActiveMQ broker
+```
 
 ## Metric description
 The field pack queries the JMX API of AtiveMQ an provides information about the broker, queues and topics.
