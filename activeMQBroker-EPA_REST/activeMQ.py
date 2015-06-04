@@ -14,7 +14,7 @@
 #           Calls the JMX interface of an ActiveMQ broker via the Jolokia http
 #           interface.and reports broker, queue and topic statistics.
 #
-# The metrics will be default be reported under 'linuxStats|<hostname>|...'.  As
+# The metrics will be default be reported under 'ActiveMQ|<hostname>|...'.  As
 # multiple hosts can report to a single EPAgent's RESTful interace.  The inclusion
 # the <hostname> in the metric path gives a opportunity to disambiguate those
 # usages.
