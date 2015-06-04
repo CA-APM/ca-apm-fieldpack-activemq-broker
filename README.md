@@ -36,7 +36,6 @@ Copy `activeMQ.py` to any diretory and make it runnable (`chmod u+x activeMQ.py`
 n/a
 
 # Usage Instructions
-
 ```Usage: activeMQ.py [options]
 
 Options:
