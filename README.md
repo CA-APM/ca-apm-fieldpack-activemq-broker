@@ -2,7 +2,10 @@
 
 
 # Description
-This field pack is a python script that collects data from remote Active MQ broker JMX interface (via Jolokia http) and publishes to EPA using 9.7.1 Restful EPAgent
+This field pack is a python script that collects data about queues, topics, ... from remote Active MQ broker JMX interface (via Jolokia http) and publishes to EPA using 9.7.1 Restful EPAgent.
+
+## Short Description
+This field pack collects data about queues, topics, ... from Active MQ broker JMX interface and publishes it to CA APM.
 
 ## Releases
 From time to time, projects may make compiled releases available.  While source code is always available for complete build, releases serve as a "tag" (numbered release) and often contain prepared packages that are prebuilt and ready to use.  Visit `http://github.com/ca-apm/<repo_name>/releases` for details.
@@ -18,6 +21,9 @@ This field pack currently only supports connections to one ActiveMQ broker.
 
 ## License
 [Apache License, Version 2.0, January 2004](http://www.apache.org/licenses/). See [Licensing](https://communities.ca.com/docs/DOC-231150910#license) on the CA APM Developer Community.
+
+Please review the [LICENSE](LICENSE) file in this repository.  Licenses may vary by repository.  Your download and use of this software constitutes your agreement to this license.
+
 
 # Installation Instructions
 
@@ -77,11 +83,18 @@ Although these utilities are unsupported, please let us know if you have any pro
 
 Unless explicitly stated otherwise this field pack is only supported on the same platforms as the APM core agent. See [APM Compatibility Guide](http://www.ca.com/us/support/ca-support-online/product-content/status/compatibility-matrix/application-performance-management-compatibility-guide.aspx).
 
+### Support URL
+https://github.com/CA-APM/ca-apm-fieldpack-activemq-broker/issues
+
 
 # Contributing
 The [CA APM Community](https://communities.ca.com/community/ca-apm) is the primary means of interfacing with other users and with the CA APM product team.  The [developer subcommunity](https://communities.ca.com/community/ca-apm/ca-developer-apm) is where you can learn more about building APM-based assets, find code examples, and ask questions of other developers and the CA APM product team.
 
 If you wish to contribute to this or any other project, please refer to [easy instructions](https://communities.ca.com/docs/DOC-231150910) available on the CA APM Developer Community.
+
+## Categories
+
+Middleware/ESB
 
 
 # Change log
