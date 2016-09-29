@@ -61,7 +61,6 @@ import urllib2
 import base64
 from datetime import datetime
 import time
-from mercurial.revset import destination
 
 
 def callUrl(url, username):
