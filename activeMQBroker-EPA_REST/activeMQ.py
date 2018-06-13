@@ -52,33 +52,63 @@
 
 import json
 import optparse
-import random
+#import random
 import requests
-import socket
+#import socket
 import sys
 import time
 import urllib2
 import base64
 from datetime import datetime
-import time
-
+import ssl
 
 def callUrl(url, username):
-    request = urllib2.Request(url)
-    # You need the replace to handle encodestring adding a trailing newline
-    # (https://docs.python.org/2/library/base64.html#base64.encodestring)
-    base64string = base64.encodestring('%s' % (username)).replace('\n', '')
-    request.add_header("Authorization", "Basic %s" % base64string)
-    try:
-        response = urllib2.urlopen(request)
-    except urllib2.URLError as err:
-        print("Unable to connect to ActiveMQ broker via URL \"{}\": {}\ncheck URL, port and that jolokia is enabled!".format(url, err))
-        sys.exit(1)
-    data = json.loads(response.read())
+    if sys.version_info[:2] == (2, 6):
+        # This is a workaround for users of Python 2.6
+        # for Basic Authentication and ignore cert warnings
+        
+        # split username and password
+        user,pswd = username.split(":")
+        
+        p = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        p.add_password(None, url, user, pswd)
+        
+        handler = urllib2.HTTPBasicAuthHandler(p)
+        opener = urllib2.build_opener(handler)
+        urllib2.install_opener(opener) 
+        
+        try:
+            response = urllib2.urlopen(url).read()
+        except urllib2.URLError as err:
+            print("Unable to connect to ActiveMQ broker via URL \"{0}\": {1}\ncheck URL, port and that jolokia is enabled!".format(url, err))
+            sys.exit(1)
+        data = json.loads(response)
+    else:
+        request = urllib2.Request(url)
+        # You need the replace to handle encodestring adding a trailing newline
+        # (https://docs.python.org/2/library/base64.html#base64.encodestring)
+        base64string = base64.encodestring('%s' % (username)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+        
+        # Workaround to ignore cert warnings for Python 2.7
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        
+        # Workaround to ignore cert warnings also works for version Python 2.7.9+
+        #ctx = ssl.create_default_context()
+        #ctx.check_hostname = False
+        #ctx.verify_mode = ssl.CERT_NONE
+        
+        try:
+            response = urllib2.urlopen(request, context=ctx)
+        except urllib2.URLError as err:
+            print("Unable to connect to ActiveMQ broker via URL \"{0}\": {1}\ncheck URL, port and that jolokia is enabled!".format(url, err))
+            sys.exit(1)
+        data = json.loads(response.read())
+        
     # print(json.dumps(data, sort_keys=True, indent=4))
     return data
-
-
+    
+    
 
 def writeMetrics(values, metricPath, metricDict):
 
@@ -144,8 +174,10 @@ def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, use
     Conversion of JMX data into metrics to be harvested
     """
 
-    url = "http://{0}:{1}/api/jolokia/read/org.apache.activemq:type=Broker,brokerName={2}".format(brokerhost, jmxport, urllib2.quote(brokername))
+    url = "https://{0}:{1}/api/jolokia/read/org.apache.activemq:type=Broker,brokerName={2}".format(brokerhost, jmxport, urllib2.quote(brokername))
+
     data = callUrl(url, username)
+        
     if (data.has_key('value')):
         values = data['value']
 
@@ -169,12 +201,15 @@ def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, use
                 destName = objName[start:end]
 
                 if (-1 == destName.find('ActiveMQ.Advisory.')):
+                    # print("url=" + url)
                     # print("destinationType=" + destinationType)
                     # print("destinationType-1=" + destinationType[:-1])
+                    # print("destName=" + urllib2.quote(destName))
 
-                    destUrl = "{},destinationType={},destinationName={}".format(url, destinationType[:-1], urllib2.quote(destName))
+                    destUrl = "{0},destinationType={1},destinationName={2}".format(url, destinationType[:-1], urllib2.quote(destName))
                     # print(destUrl)
                     data = callUrl(destUrl, username)
+                        
 
                     if (data.has_key('value')):
                         destMetricPath = metricPath + '|Broker|' + values['BrokerName'] + '|' + destinationType + '|' + destName
@@ -200,7 +235,6 @@ def main(argv):
     parser.add_option("-p", "--port", help = "port EPAgent is connected to",
         type = "int", default = 8080, dest = "port")
     parser.add_option("-m", "--metric_path", help = "metric path header for all metrics",
-        #dest = "metricPath", default = "ActiveMQ|{0}".format(socket.gethostname()))
         dest = "metricPath", default = "ActiveMQ")
     parser.add_option("-u", "--user", help = "user and password for ActiveMQ JMX access",
         dest = "user", default = "admin:admin")
@@ -246,7 +280,7 @@ def main(argv):
             r = requests.post(url, data = json.dumps(metricDict),
                               headers = headers)
         except requests.ConnectionError as err:
-            print("Unable to connect to EPAgent via URL \"{}\": {}\ncheck httpServerPort and that EPAgent is running!".format(url, err))
+            print("Unable to connect to EPAgent via URL \"{0}\": {1}\ncheck httpServerPort and that EPAgent is running!".format(url, err))
             sys.exit(1)
 
 
