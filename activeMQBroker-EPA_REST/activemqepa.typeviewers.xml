@@ -89,7 +89,7 @@
     </Panel>
   </ComponentDefinition>
 	<!-- ActiveMQ Type Viewers -->
-	<TypeViewer id="ActiveMQ-Broker" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*"
+	<TypeViewer id="ActiveMQ-Broker" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*"
 		tab-order="9">
 		<Title its:translate="yes">ActiveMQ Broker</Title>
     <SplitPane split-ratio="0.6">
@@ -100,12 +100,12 @@
       </SplitPane>
     </SplitPane>
 	</TypeViewer>
-	<TypeViewer id="ActiveMQ-Queues" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*\|Queues\|[^\|]*"
+	<TypeViewer id="ActiveMQ-Queues" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Queues\|[^\|]*"
 		tab-order="10">
 		<Title its:translate="yes">ActiveMQ Queues</Title>
 		<Component id="queue-graph" />
 	</TypeViewer>
-  <TypeViewer id="ActiveMQ-Topics" supported-items-specifier="ActiveMQ\|[^\|]*\|Broker\|[^\|]*\|Topics\|[^\|]*"
+  <TypeViewer id="ActiveMQ-Topics" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Topics\|[^\|]*"
     tab-order="10">
     <Title its:translate="yes">ActiveMQ Topics</Title>
     <Component id="queue-graph" />
