@@ -138,7 +138,7 @@ def writeMetrics(values, metricPath, metricDict):
 
 
 
-def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, username):
+def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, username, subscriptions):
 
     """
     Conversion of JMX data into metrics to be harvested
@@ -180,6 +180,23 @@ def collectActiveMQ(metricDict, metricPath, brokerhost, jmxport, brokername, use
                         destMetricPath = metricPath + '|Broker|' + values['BrokerName'] + '|' + destinationType + '|' + destName
                         writeMetrics(data['value'], destMetricPath, metricDict)
 
+                        if (subscriptions & data['value'].has_key('Subscriptions')):
+                            for subscription in data['value']['Subscriptions']:
+                                # print("\nsubscription={}".format(subscription))
+                                objName = subscription['objectName']
+                                # print("\nobjName={}".format(objName))
+                                index = objName.index('clientId=')
+                                start = index + len('clientId=')
+                                end = objName.index(',', index)
+                                subName = objName[start:end]
+                                subUrl = "http://{}:{}/api/jolokia/read/{}".format(brokerhost, jmxport, objName)
+                                # print(subUrl)
+                                data = callUrl(subUrl, username)
+                                if (data.has_key('value')):
+                                    subMetricPath = destMetricPath + '|Subscription|' + subName
+                                    writeMetrics(data['value'], subMetricPath, metricDict)
+
+
     """
     values = data['value']
 
@@ -210,6 +227,8 @@ def main(argv):
         type = "int", dest = "jmxport", default = "8161")
     parser.add_option("-n", "--broker_name", help = "name of ActiveMQ broker",
         dest = "brokername", default = "localhost")
+    parser.add_option("-s", "--subscriptions", help = "read subscription metrics",
+        dest = "subscriptions", default = False, action = "store_true")
 
     (options, args) = parser.parse_args();
 
@@ -235,7 +254,7 @@ def main(argv):
         # Metrics are collected in the metricDict dictionary.
         metricDict = {'metrics' : []}
 
-        collectActiveMQ(metricDict, options.metricPath, options.brokerhost, options.jmxport, options.brokername, options.user)
+        collectActiveMQ(metricDict, options.metricPath, options.brokerhost, options.jmxport, options.brokername, options.user, options.subscriptions)
 
         #
         # convert metric Dictionary into a JSON message via the
@@ -267,7 +286,8 @@ def main(argv):
         delta = end-start
         howlong = 15.0 - delta.seconds
         howlong = (howlong * 100000 - delta.microseconds) / 100000
-        time.sleep(howlong)
+        if (howlong > 0):
+            time.sleep(howlong)
 
 if __name__ == "__main__":
     main(sys.argv)

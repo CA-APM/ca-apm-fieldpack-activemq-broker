@@ -36,7 +36,7 @@ Please review the [LICENSE](LICENSE) file in this repository.  Licenses may vary
 APM EPAgent version 9.7.1
 
 ## Installation
-Copy `activeMQ.py` to any diretory and make it runnable (`chmod u+x activeMQ.py`)
+Copy `activeMQ.py` to any directory and make it runnable (`chmod u+x activeMQ.py`)
 
 ## Configuration
 n/a
@@ -59,10 +59,12 @@ Options:
      hostname of ActiveMQ broker
   -j JMX_PORT, --jmx_port=JMX_PORT
      JMX port of ActiveMQ broker
+  -s, --subscriptions
+     also read subscription metrics
 ```
 
 ## Metric description
-The field pack queries the JMX API of AtiveMQ an provides information about the broker, queues and topics.
+The field pack queries the JMX API of ActiveMQ an provides information about the broker, queues and topics.
 
 ## Custom Management Modules
 n/a
