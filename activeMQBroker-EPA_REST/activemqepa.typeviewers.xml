@@ -88,26 +88,131 @@
       </Graph>
     </Panel>
   </ComponentDefinition>
+	<ComponentDefinition id="subscriber-table">
+		<MetricDataTable show-bottom-graph="true">
+			<Column content-type="StringValue" relative-specifier="(.*):ClientId">
+				<Title its:translate="yes">Client ID</Title>
+			</Column>
+			<Column content-type="LastPrefixSegment" relative-width="1"
+				segment-offset="0">
+				<Title its:translate="yes">Subscription Name</Title>
+			</Column>
+			<Column content-type="StringValue" relative-specifier="(.*):ConnectionId">
+				<Title its:translate="yes">Connection ID</Title>
+			</Column>
+			<Column content-type="StringValue" relative-specifier="(.*):DestinationName">
+				<Title its:translate="yes">Destination</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):PendingQueueSize">
+				<Title its:translate="yes">Pending Queue Size</Title>
+			</Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):DispatchedQueueSize">
+				<Title its:translate="yes">Dispatched Queue Size</Title>
+			</Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):DispatchedCounter">
+        <Title its:translate="yes">Dispatched Counter</Title>
+      </Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):EnqueueCounter">
+        <Title its:translate="yes">Enqueue Counter</Title>
+      </Column>
+      <Column content-type="NumericalValue" relative-specifier="(.*):DequeueCounter">
+        <Title its:translate="yes">Dequeue Counter</Title>
+      </Column>
+			<Column content-type="NumericalValue" relative-specifier="(.*):Active">
+        <Title its:translate="yes">Active</Title>
+      </Column>
+		</MetricDataTable>
+	</ComponentDefinition>
+	<ComponentDefinition id="subscriber-graph">
+		<SplitPane split-ratio="0.1">
+			<Panel columns="1" layout="GridLayout" rows="2">
+				<Panel columns="2" layout="GridLayout" rows="1">
+					<SelectedNodeLabel>
+						<Title>Subscription Name: </Title>
+					</SelectedNodeLabel>
+					<LiveMetricValueLabel relative-metric=":ClientId">
+						<Title>Client ID: </Title>
+					</LiveMetricValueLabel>
+				</Panel>
+				<Panel columns="2" layout="GridLayout" rows="1">
+					<LiveMetricValueLabel relative-metric=":DestinationName">
+						<Title>Destination: </Title>
+					</LiveMetricValueLabel>
+					<LiveMetricValueLabel relative-metric=":ConnectionId">
+						<Title>Connection ID: </Title>
+					</LiveMetricValueLabel>
+				</Panel>
+			</Panel>
+	    <Panel columns="1" layout="GridLayout" rows="2">
+				<Panel columns="2" layout="GridLayout" rows="1">
+	      	<Graph relative-specifier=":PendingQueueSize">
+	        	<Title its:translate="yes">Pending Queue Size</Title>
+	      	</Graph>
+					<Graph relative-specifier=":DispatchedQueueSize">
+	        	<Title its:translate="yes">Dispatched Queue Size</Title>
+	      	</Graph>
+				</Panel>
+				<Panel columns="3" layout="GridLayout" rows="1">
+					<Graph relative-specifier=":DispatchedCounter">
+	        	<Title its:translate="yes">Dispatched Counter</Title>
+	      	</Graph>
+					<Graph relative-specifier=":EnqueueCounter">
+	        	<Title its:translate="yes">Enqueue Counter</Title>
+	      	</Graph>
+					<Graph relative-specifier=":DequeueCounter">
+	        	<Title its:translate="yes">Dequeue Counter</Title>
+	      	</Graph>
+				</Panel>
+	    </Panel>
+		</SplitPane>
+  </ComponentDefinition>
 	<!-- ActiveMQ Type Viewers -->
 	<TypeViewer id="ActiveMQ-Broker" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*"
 		tab-order="9">
 		<Title its:translate="yes">ActiveMQ Broker</Title>
-    <SplitPane split-ratio="0.6">
+    <SplitPane split-ratio="0.3">
       <Component id="broker-graph" />
-      <SplitPane split-ratio="0.6">
+			<Panel columns="1" layout="GridLayout" rows="3">
         <Component id="queue-table" specifier-prepend="Queues\|[^\|]*" show-bottom-graph="false"/>
         <Component id="queue-table" specifier-prepend="Topics\|[^\|]*" show-bottom-graph="false"/>
-      </SplitPane>
+				<Component id="subscriber-table" specifier-prepend="(Queues|Topics)\|[^\|]*\|Subscription\|[^\|]*" show-bottom-graph="false"/>
+      </Panel>
     </SplitPane>
 	</TypeViewer>
-	<TypeViewer id="ActiveMQ-Queues" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Queues\|[^\|]*"
+	<TypeViewer id="ActiveMQ-Queues" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Queues"
 		tab-order="10">
 		<Title its:translate="yes">ActiveMQ Queues</Title>
-		<Component id="queue-graph" />
+		<Component id="queue-table" specifier-prepend="[^\|]*" show-bottom-graph="false"/>
 	</TypeViewer>
-  <TypeViewer id="ActiveMQ-Topics" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Topics\|[^\|]*"
+	<TypeViewer id="ActiveMQ-Queue" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Queues\|[^\|]*"
+		tab-order="10">
+		<Title its:translate="yes">ActiveMQ Queues</Title>
+		<SplitPane split-ratio="0.6">
+			<Component id="queue-graph" />
+			<Component id="subscriber-table" specifier-prepend="Subscription\|[^\|]*" show-bottom-graph="false"/>
+		</SplitPane>
+	</TypeViewer>
+	<TypeViewer id="ActiveMQ-Topics" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Topics"
+		tab-order="10">
+		<Title its:translate="yes">ActiveMQ Topics</Title>
+		<Component id="queue-table" specifier-prepend="[^\|]*" show-bottom-graph="false"/>
+	</TypeViewer>
+  <TypeViewer id="ActiveMQ-Topic" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|Topics\|[^\|]*"
     tab-order="10">
     <Title its:translate="yes">ActiveMQ Topics</Title>
-    <Component id="queue-graph" />
+		<SplitPane split-ratio="0.6">
+    	<Component id="queue-graph" />
+			<Component id="subscriber-table" specifier-prepend="Subscription\|[^\|]*" show-bottom-graph="false"/>
+		</SplitPane>
   </TypeViewer>
+	<TypeViewer id="ActiveMQ-Subscribers" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|(Topics|Queues)\|[^\|]*\|Subscription"
+		tab-order="10">
+		<Title its:translate="yes">ActiveMQ Subscribers</Title>
+		<Component id="subscriber-table" specifier-prepend="[^\|]*" show-bottom-graph="false"/>
+	</TypeViewer>
+	<TypeViewer id="ActiveMQ-Subscriber" supported-items-specifier="ActiveMQ\|Broker\|[^\|]*\|(Topics|Queues)\|[^\|]*\|Subscription\|[^\|]*"
+		tab-order="10">
+		<Title its:translate="yes">ActiveMQ Subscriber</Title>
+		<Component id="subscriber-graph"/>
+	</TypeViewer>
 </TypeViewerSet>
