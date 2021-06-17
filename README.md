@@ -28,18 +28,24 @@ Please review the [LICENSE](LICENSE) file in this repository.  Licenses may vary
 # Installation Instructions
 
 ## Prerequisites
-* Install, configure and run an EPAgent on the same or a remote server. See [CA APM Environment Performance Agent Implementation Guide](https://wiki.ca.com/display/APMDEVOPS97/CA+APM+Environment+Performance+Agent+Implementation+Guide).
+* Install, configure and run an EPAgent or APM Infrastructure Agent (APM IA) on the same or a remote server. See [CA APM Infrastructure Agent](https://techdocs.broadcom.com/us/en/ca-enterprise-software/it-operations-management/application-performance-management/10-7/implementing-agents/infrastructure-agent.html).
+* The agent http port (`introscope.epagent.config.httpServerPort`) must be open and reachable from the server where the script is running.
 * Python 2.7 or above with the 'requests' python package This can be obtained in one of the following ways: `yum install python-requests` or `pip install requests` or `easy_install requests`
 * JMX and Jolokia enabled and access not restricted on ActiveMQ broker
 
 ## Dependencies
-APM EPAgent version 9.7.1
+APM EPAgent version 9.7.1 or APM Infrastructure Agent 10.7
 
 ## Installation
 Copy `activeMQ.py` to any directory and make it runnable (`chmod u+x activeMQ.py`)
 
 ## Configuration
-n/a
+You can (but need not) configure the script as stateful (!) plugin, so it is automatically started by the agent. See [Stateful Plug-ins](https://techdocs.broadcom.com/us/en/ca-enterprise-software/it-operations-management/application-performance-management/10-7/implementing-agents/infrastructure-agent/epagent-plug-ins/standalone-epagent/standalone-epagent-properties.html#concept.dita_75be5e77b1cf75bb5a4f67854c649fe75622ea1d_StatefulPlugins).
+
+```
+introscope.epagent.plugins.stateful.names=AMQ
+introscope.epagent.stateful.AMQ.command=python activeMQ.py [options]
+```
 
 # Usage Instructions
 ```
